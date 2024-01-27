@@ -1,0 +1,63 @@
+GREY_COLOR_BGR = (128, 128, 128)
+RED_COLOR_BGR = (0, 0, 255)
+GREEN_COLOR_BGR = (170, 255, 0)
+WHITE_COLOR_BGR = (255, 255, 255)
+LIGHT_FONT_BLACK = (39, 36, 33)
+
+DEFECT_LABEL = "Defekt"
+
+CARD_VALUES = {
+    'As Kier': 0,
+    'Krol Kier': 0,
+    'Dama Kier': 0,
+    'Walet Kier': 0,
+    'Dziesiatka Kier': 0,
+    'Dziewiatka Kier': 0,
+    'Osemka Kier': 0,
+    'Siodemka Kier': 0,
+    'Szostka Kier': 0,
+    'Piatka Kier': 0,
+    'Czworka Kier': 0,
+    'Trojka Kier': 0,
+    'Dwojka Kier': 0,
+    'As Karo': 0,
+    'Krol Karo': 0,
+    'Dama Karo': 0,
+    'Walet Karo': 0,
+    'Dziesiatka Karo': 0,
+    'Dziewiatka Karo': 0,
+    'Osemka Karo': 0,
+    'Siodemka Karo': 0,
+    'Szostka Karo': 0,
+    'Piatka Karo': 0,
+    'Czworka Karo': 0,
+    'Trojka Karo': 0,
+    'Dwojka Karo': 0,
+    'As Trefl': 0,
+    'Krol Trefl': 0,
+    'Dama Trefl': 0,
+    'Walet Trefl': 0,
+    'Dziesiatka Trefl': 0,
+    'Dziewiatka Trefl': 0,
+    'Osemka Trefl': 0,
+    'Siodemka Trefl': 0,
+    'Szostka Trefl': 0,
+    'Piatka Trefl': 0,
+    'Czworka Trefl': 0,
+    'Trojka Trefl': 0,
+    'Dwojka Trefl': 0,
+    'As Pik': 0,
+    'Krol Pik': 0,
+    'Dama Pik': 0,
+    'Walet Pik': 0,
+    'Dziesiatka Pik': 0,
+    'Dziewiatka Pik': 0,
+    'Osemka Pik': 0,
+    'Siodemka Pik': 0,
+    'Szostka Pik': 0,
+    'Piatka Pik': 0,
+    'Czworka Pik': 0,
+    'Trojka Pik': 0,
+    'Dwojka Pik': 0,
+    DEFECT_LABEL: 0
+}
