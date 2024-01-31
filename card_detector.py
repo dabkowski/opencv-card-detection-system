@@ -1,4 +1,7 @@
+from threading import Thread
+
 import cv2
+import time
 from ultralytics import YOLO
 from ultralytics.solutions import object_counter
 
@@ -6,39 +9,24 @@ from constants import *
 
 model = YOLO('model/best.pt')
 
+im0 = None
 
-def detect_cards(queue, video_path):
-    cap = cv2.VideoCapture(video_path)
-    assert cap.isOpened(), "Error reading video file"
-    w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
 
-    video_writer = cv2.VideoWriter("output_vids/object_counting_output.avi",
-                                   cv2.VideoWriter_fourcc(*'mp4v'),
-                                   fps,
-                                   (w, h))
+def capture_frame(cap):
+    global im0
+    while cap.isOpened():
+        success, im0 = cap.read()
+        time.sleep(0.01)
 
-    region_points = [(w - 140, h - 10), (w - 40, h - 10), (w - 40, 5), (w - 140, 5)]
-    counter = object_counter.ObjectCounter()
-    counter.set_args(view_img=True,
-                     reg_pts=region_points,
-                     classes_names=model.names,
-                     draw_tracks=True,
-                     track_color=(124, 252, 0),
-                     count_reg_color=GREY_COLOR_BGR,
-                     view_in_counts=False,
-                     view_out_counts=False)
 
+def preprocess_card(counter, queue):
+    global im0
     detected_ids = []
     detected_classes = []
     detected_defects = []
     counted_obj_l = []
     counted_obj = 0
-    while cap.isOpened():
-        success, im0 = cap.read()
-        if not success:
-            print("Video frame is empty or video processing has been successfully completed.")
-            break
-
+    while True:
         tracks = model.track(im0, persist=True, conf=0.75, verbose=False)
 
         im0 = counter.start_counting(im0, tracks)
@@ -72,8 +60,44 @@ def detect_cards(queue, video_path):
                 counted_obj_l.append(counted_obj)
 
         queue.put(CARD_VALUES)
-        video_writer.write(im0)
+        time.sleep(.04)
+
+
+def detect_cards(queue, video_path):
+    global im0
+
+    cap = cv2.VideoCapture(video_path)
+    assert cap.isOpened(), "Error reading video file"
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+    w, h, fps = (int(cap.get(x)) for x in (cv2.CAP_PROP_FRAME_WIDTH, cv2.CAP_PROP_FRAME_HEIGHT, cv2.CAP_PROP_FPS))
+
+    # video_writer = cv2.VideoWriter("output_vids/object_counting_output.avi",
+    #                                cv2.VideoWriter_fourcc(*'mp4v'),
+    #                                fps,
+    #                                (w, h))
+
+    region_points = [(w - 140, h - 10), (w - 40, h - 10), (w - 40, 5), (w - 140, 5)]
+    counter = object_counter.ObjectCounter()
+    counter.set_args(view_img=True,
+                     reg_pts=region_points,
+                     classes_names=model.names,
+                     draw_tracks=True,
+                     track_color=(124, 252, 0),
+                     count_reg_color=GREY_COLOR_BGR,
+                     view_in_counts=False,
+                     view_out_counts=False)
+
+    thread = Thread(target=capture_frame, args=(cap, fps))
+    thread.daemon = True
+    thread.start()
+
+    thread2 = Thread(target=preprocess_card, args=(counter, queue))
+    thread2.daemon = True
+    thread2.start()
+
+    thread.join()
+    thread2.join()
 
     cap.release()
-    video_writer.release()
+    #video_writer.release()
     cv2.destroyAllWindows()
